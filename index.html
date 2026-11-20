@@ -1,0 +1,317 @@
+import os
+import json
+import threading
+from flask import Flask
+import telebot
+from telebot import types
+
+# ================= CẤU HÌNH =================
+BOT_TOKEN = os.environ.get("BOT_TOKEN", "YOUR_BOT_TOKEN_HERE")
+ADMIN_ID = int(os.environ.get("ADMIN_ID", "0"))
+
+USERS_FILE = "users.json"
+KEYS_FILE = "keys.json"
+
+LIKE_COST = 4
+LIKE_AMOUNT = 200
+KEY_REWARD = 1
+
+# 6 link rút gọn (đích của link rút gọn là trang random key của bạn)
+LINKS = [
+    {"id": 1, "name": "Link 1", "url": "https://link-rut-gon-cua-ban/1"},
+    {"id": 2, "name": "Link 2", "url": "https://link-rut-gon-cua-ban/2"},
+    {"id": 3, "name": "Link 3", "url": "https://link-rut-gon-cua-ban/3"},
+    {"id": 4, "name": "Link 4", "url": "https://link-rut-gon-cua-ban/4"},
+    {"id": 5, "name": "Link 5", "url": "https://link-rut-gon-cua-ban/5"},
+    {"id": 6, "name": "Link 6", "url": "https://link-rut-gon-cua-ban/6"},
+]
+
+bot = telebot.TeleBot(BOT_TOKEN, parse_mode="HTML")
+
+# ================= KEEP ALIVE =================
+app = Flask("")
+
+@app.route("/")
+def home():
+    return "Bot is running!"
+
+def run_web():
+    app.run(host="0.0.0.0", port=8080)
+
+def keep_alive():
+    threading.Thread(target=run_web, daemon=True).start()
+
+# ================= ĐỌC / GHI FILE =================
+def load_json(path, default):
+    if not os.path.exists(path):
+        with open(path, "w", encoding="utf-8") as f:
+            json.dump(default, f, ensure_ascii=False, indent=2)
+    with open(path, "r", encoding="utf-8") as f:
+        try:
+            return json.load(f)
+        except json.JSONDecodeError:
+            return default
+
+def save_json(path, data):
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump(data, f, ensure_ascii=False, indent=2)
+
+def get_user(user_id):
+    users = load_json(USERS_FILE, {})
+    uid = str(user_id)
+    if uid not in users:
+        users[uid] = {
+            "coins": 0,
+            "completed_links": [],
+            "waiting_link": None   # lưu link_id (1..6) nếu user vừa bấm "Nhập key"
+        }
+        save_json(USERS_FILE, users)
+    return users[uid]
+
+def save_user(user_id, u_obj):
+    users = load_json(USERS_FILE, {})
+    users[str(user_id)] = u_obj
+    save_json(USERS_FILE, users)
+
+def get_keys_db():
+    return load_json(KEYS_FILE, {
+        "available_keys": [],  # danh sách key hợp lệ chưa dùng
+        "used_keys": {}        # { "KEY123": {"user_id": ..., "link_id": ...} }
+    })
+
+def save_keys_db(db):
+    save_json(KEYS_FILE, db)
+
+def is_admin(user_id):
+    return int(user_id) == ADMIN_ID
+
+# ================= GIAO DIỆN /KEY =================
+def build_key_markup(u_obj):
+    completed = set(u_obj.get("completed_links", []))
+    markup = types.InlineKeyboardMarkup(row_width=2)
+    buttons = []
+
+    # 6 nút link (không hiện nguyên đường link, chỉ hiện trạng thái 🟢 / 🔴)
+    for item in LINKS:
+        lid = item["id"]
+        done = lid in completed
+        icon = "🔴" if done else "🟢"
+        label = f"{icon} {item['name']} ({'Đã vượt' if done else 'Chưa vượt'})"
+        if done:
+            buttons.append(types.InlineKeyboardButton(text=label, callback_data=f"done_{lid}"))
+        else:
+            buttons.append(types.InlineKeyboardButton(text=label, url=item["url"]))
+
+    # 6 nút bấm để nhập key cho từng link chưa vượt
+    for item in LINKS:
+        lid = item["id"]
+        if lid not in completed:
+            buttons.append(
+                types.InlineKeyboardButton(
+                    text=f"🔑 Nhập key {item['name']}",
+                    callback_data=f"enterkey_{lid}"
+                )
+            )
+
+    markup.add(*buttons)
+    return markup
+
+@bot.message_handler(commands=["key"])
+def cmd_key(message):
+    u = get_user(message.from_user.id)
+    completed = u.get("completed_links", [])
+    text = (
+        f"🔑 <b>VƯỢT LINK LẤY KEY ({len(completed)}/{len(LINKS)} đã vượt)</b>\n"
+        f"• Quy đổi: <b>1 key = +{KEY_REWARD} coin</b>\n"
+        f"• Trạng thái: 🟢 Chưa vượt | 🔴 Đã vượt\n"
+        f"• 💰 Coin hiện tại: <b>{u['coins']}</b>\n\n"
+        f"1. Bấm nút 🟢 để vượt link và nhận key ngẫu nhiên.\n"
+        f"2. Bấm <b>🔑 Nhập key Link X</b> rồi gửi key vào bot (hoặc gõ <code>/nhapkey &lt;số_link&gt; &lt;key&gt;</code>)."
+    )
+    bot.send_message(message.chat.id, text, reply_markup=build_key_markup(u))
+
+@bot.callback_query_handler(func=lambda call: True)
+def on_callback(call):
+    uid = call.from_user.id
+    u = get_user(uid)
+
+    if call.data.startswith("done_"):
+        lid = call.data.split("_")[1]
+        bot.answer_callback_query(call.id, f"🔴 Link {lid} bạn đã vượt rồi!")
+
+    elif call.data.startswith("enterkey_"):
+        lid = int(call.data.split("_")[1])
+        if lid in u.get("completed_links", []):
+            bot.answer_callback_query(call.id, "🔴 Link này đã hoàn thành rồi!", show_alert=True)
+            return
+        u["waiting_link"] = lid
+        save_user(uid, u)
+        bot.answer_callback_query(call.id)
+        bot.send_message(
+            call.message.chat.id,
+            f"✍️ Hãy gửi <b>key</b> bạn vừa lấy được cho <b>Link {lid}</b>:"
+        )
+
+def verify_and_claim_key(message, link_id, raw_key):
+    uid = message.from_user.id
+    u = get_user(uid)
+    key_val = raw_key.strip()
+
+    if link_id not in [x["id"] for x in LINKS]:
+        bot.reply_to(message, "⚠️ Số thứ tự link phải từ 1 đến 6.")
+        return
+
+    if link_id in u.get("completed_links", []):
+        bot.reply_to(message, f"🔴 Bạn đã vượt <b>Link {link_id}</b> và nhận coin rồi.")
+        return
+
+    db = get_keys_db()
+    avail = db.get("available_keys", [])
+    used = db.get("used_keys", {})
+
+    if key_val in used:
+        bot.reply_to(message, "❌ Key này đã được sử dụng trước đó!")
+        return
+
+    if key_val not in avail:
+        bot.reply_to(message, "❌ Key không hợp lệ hoặc không tồn tại trong hệ thống!")
+        return
+
+    # Hợp lệ: xóa khỏi available_keys, chuyển sang used_keys, cộng coin
+    avail.remove(key_val)
+    used[key_val] = {"user_id": uid, "link_id": link_id}
+    db["available_keys"] = avail
+    db["used_keys"] = used
+    save_keys_db(db)
+
+    u["completed_links"] = sorted(list(set(u.get("completed_links", []) + [link_id])))
+    u["coins"] = u.get("coins", 0) + KEY_REWARD
+    u["waiting_link"] = None
+    save_user(uid, u)
+
+    bot.reply_to(
+        message,
+        f"✅ Xác nhận key thành công cho <b>Link {link_id}</b>!\n"
+        f"➕ Nhận: <b>+{KEY_REWARD} coin</b> | 💰 Tổng coin: <b>{u['coins']}</b>\n"
+        f"Gõ /key để xem trạng thái 🟢 / 🔴 mới nhất."
+    )
+
+@bot.message_handler(commands=["nhapkey"])
+def cmd_nhapkey(message):
+    parts = message.text.strip().split(maxsplit=2)
+    if len(parts) < 3:
+        bot.reply_to(message, "⚠️ Cú pháp: <code>/nhapkey &lt;1-6&gt; &lt;mã_key&gt;</code>\nVí dụ: <code>/nhapkey 1 KEY_ABC123</code>")
+        return
+    try:
+        lid = int(parts[1])
+    except ValueError:
+        bot.reply_to(message, "⚠️ Số link phải là số từ 1 đến 6.")
+        return
+    verify_and_claim_key(message, lid, parts[2])
+
+@bot.message_handler(func=lambda m: m.text and not m.text.startswith("/"))
+def handle_plain_key(message):
+    u = get_user(message.from_user.id)
+    waiting_lid = u.get("waiting_link")
+    if waiting_lid:
+        verify_and_claim_key(message, int(waiting_lid), message.text)
+
+# ================= LỆNH /LIKE =================
+@bot.message_handler(commands=["like"])
+def cmd_like(message):
+    uid = message.from_user.id
+    u = get_user(uid)
+
+    if u.get("coins", 0) < LIKE_COST:
+        bot.reply_to(
+            message,
+            f"❌ Bạn cần <b>{LIKE_COST} coin</b> để đổi <b>{LIKE_AMOUNT} like</b>. Hiện có: <b>{u.get('coins', 0)} coin</b>."
+        )
+        return
+
+    parts = message.text.strip().split()
+    if len(parts) < 2:
+        bot.reply_to(message, "⚠️ Cú pháp: <code>/like &lt;id_cần_buff&gt;</code>")
+        return
+
+    target_uid = parts[1].strip()
+    u["coins"] -= LIKE_COST
+    save_user(uid, u)
+
+    bot.reply_to(
+        message,
+        f"✅ Đã trừ <b>{LIKE_COST} coin</b> và gửi yêu cầu buff <b>{LIKE_AMOUNT} like</b> cho ID <code>{target_uid}</code>.\n"
+        f"💰 Coin còn lại: <b>{u['coins']}</b>"
+    )
+
+    if ADMIN_ID:
+        bot.send_message(
+            ADMIN_ID,
+            f"🔔 <b>YÊU CẦU BUFF LIKE</b>\n"
+            f"• User: <code>{uid}</code>\n"
+            f"• Target ID: <code>{target_uid}</code>\n"
+            f"• Lệnh buff: <code>/buff {target_uid} {LIKE_AMOUNT}</code>"
+        )
+
+# ================= LỆNH ADMIN =================
+# Cách dùng: /addkey KEY1 KEY2 KEY3 ... (hoặc mỗi key cách nhau dấu cách/xuống dòng)
+@bot.message_handler(commands=["addkey"])
+def cmd_addkey(message):
+    if not is_admin(message.from_user.id):
+        return
+    raw = message.text.replace("/addkey", "", 1).strip()
+    new_keys = [k.strip() for k in raw.replace("\n", " ").split() if k.strip()]
+    if not new_keys:
+        bot.reply_to(message, "⚠️ Nhập danh sách key sau /addkey.\nVí dụ: <code>/addkey K001 K002 K003</code>")
+        return
+
+    db = get_keys_db()
+    avail = set(db.get("available_keys", []))
+    used = set(db.get("used_keys", {}).keys())
+
+    added = 0
+    for k in new_keys:
+        if k not in avail and k not in used:
+            avail.add(k)
+            added += 1
+
+    db["available_keys"] = sorted(list(avail))
+    save_keys_db(db)
+
+    bot.reply_to(
+        message,
+        f"✅ Đã thêm <b>{added}</b> key mới vào kho.\n"
+        f"📦 Tổng key khả dụng hiện tại: <b>{len(db['available_keys'])}</b>"
+    )
+
+@bot.message_handler(commands=["addcoin"])
+def cmd_addcoin(message):
+    if not is_admin(message.from_user.id):
+        return
+    parts = message.text.strip().split()
+    if len(parts) != 3:
+        bot.reply_to(message, "⚠️ Cú pháp: <code>/addcoin &lt;id&gt; &lt;số_coin&gt;</code>")
+        return
+    tid, amt = parts[1].strip(), int(parts[2].strip())
+    u = get_user(tid)
+    u["coins"] = u.get("coins", 0) + amt
+    save_user(tid, u)
+    bot.reply_to(message, f"✅ Đã cộng <b>+{amt} coin</b> cho <code>{tid}</code> (Tổng: <b>{u['coins']}</b>)")
+
+@bot.message_handler(commands=["trucoin"])
+def cmd_trucoin(message):
+    if not is_admin(message.from_user.id):
+        return
+    parts = message.text.strip().split()
+    if len(parts) != 3:
+        bot.reply_to(message, "⚠️ Cú pháp: <code>/trucoin &lt;id&gt; &lt;số_coin&gt;</code>")
+        return
+    tid, amt = parts[1].strip(), int(parts[2].strip())
+    u = get_user(tid)
+    u["coins"] = max(0, u.get("coins", 0) - amt)
+    save_user(tid, u)
+    bot.reply_to(message, f"🔻 Đã trừ <b>-{amt} coin</b> của <code>{tid}</code> (Còn: <b>{u['coins']}</b>)")
+
+if __name__ == "__main__":
+    keep_alive()
+    bot.infinity_polling(skip_pending=True)
