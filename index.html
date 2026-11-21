@@ -2,234 +2,1222 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Nhận Key Ngẫu Nhiên</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Đua Top Điểm Nhiệm Vụ Free Fire</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=Chakra+Petch:wght@600;700&display=swap" rel="stylesheet" />
   <style>
+    :root {
+      --bg-base: #050811;
+      --bg-panel: rgba(15, 23, 42, 0.78);
+      --bg-panel-solid: #0f172a;
+      --border-subtle: rgba(148, 163, 184, 0.16);
+      --text-main: #f8fafc;
+      --text-dim: #94a3b8;
+      --gold: #fbbf24;
+      --gold-glow: rgba(251, 191, 36, 0.28);
+      --silver: #cbd5e1;
+      --silver-glow: rgba(203, 213, 225, 0.18);
+      --bronze: #f97316;
+      --bronze-glow: rgba(249, 115, 22, 0.2);
+      --primary: #3b82f6;
+      --emerald: #10b981;
+    }
+
     * {
       box-sizing: border-box;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    }
-    body {
       margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: 'Be Vietnam Pro', system-ui, -apple-system, sans-serif;
+      background-color: var(--bg-base);
+      background-image:
+        radial-gradient(ellipse 80% 50% at 50% -10%, rgba(59, 130, 246, 0.24), transparent),
+        radial-gradient(ellipse 60% 40% at 85% 25%, rgba(251, 191, 36, 0.08), transparent),
+        linear-gradient(180deg, #070c1a 0%, #04060d 100%);
+      color: var(--text-main);
       min-height: 100vh;
+      padding: 20px 14px 60px;
+      line-height: 1.45;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    /* Header Banner */
+    .hero-banner {
+      position: relative;
+      text-align: center;
+      padding: 22px 16px 20px;
+      margin-bottom: 14px;
+      border-radius: 20px;
+      background: linear-gradient(145deg, rgba(15, 23, 42, 0.92), rgba(9, 13, 26, 0.96));
+      border: 1px solid rgba(59, 130, 246, 0.28);
+      box-shadow: 0 18px 40px -15px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+      overflow: hidden;
+    }
+
+    .hero-banner::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 20%;
+      right: 20%;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--gold), var(--primary), transparent);
+    }
+
+    .live-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 12px;
+      border-radius: 999px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.6px;
+      text-transform: uppercase;
+      color: #fde68a;
+      background: rgba(251, 191, 36, 0.12);
+      border: 1px solid rgba(251, 191, 36, 0.32);
+      margin-bottom: 10px;
+    }
+
+    .live-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #22c55e;
+      box-shadow: 0 0 8px #22c55e;
+      animation: pulse 1.6s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.45; transform: scale(0.8); }
+    }
+
+    .hero-banner h1 {
+      font-family: 'Chakra Petch', 'Be Vietnam Pro', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      background: linear-gradient(180deg, #ffffff 25%, #93c5fd 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 6px;
+    }
+
+    .hero-banner p {
+      font-size: 0.84rem;
+      color: var(--text-dim);
+      max-width: 430px;
+      margin: 0 auto 14px;
+    }
+
+    /* Countdown Box */
+    .countdown-box {
+      background: rgba(6, 10, 20, 0.82);
+      border: 1px solid rgba(59, 130, 246, 0.25);
+      border-radius: 14px;
+      padding: 10px 12px;
+      max-width: 440px;
+      margin: 0 auto;
+    }
+
+    .countdown-label {
+      font-size: 0.71rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      color: #93c5fd;
+      margin-bottom: 8px;
+    }
+
+    .countdown-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 7px;
+    }
+
+    .cd-cell {
+      background: rgba(15, 23, 42, 0.95);
+      border: 1px solid rgba(148, 163, 184, 0.16);
+      border-radius: 10px;
+      padding: 6px 4px;
+    }
+
+    .cd-num {
+      font-family: 'Chakra Petch', sans-serif;
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #fde047;
+      line-height: 1.15;
+    }
+
+    .cd-unit {
+      font-size: 0.66rem;
+      color: var(--text-dim);
+      font-weight: 600;
+      margin-top: 2px;
+    }
+
+    /* Notice Banner with Shaking Bell */
+    .notice-card {
+      display: flex;
+      align-items: flex-start;
+      gap: 11px;
+      background: linear-gradient(135deg, rgba(245, 158, 11, 0.14), rgba(239, 68, 68, 0.1));
+      border: 1px solid rgba(251, 191, 36, 0.42);
+      border-radius: 15px;
+      padding: 12px 14px;
+      margin-bottom: 18px;
+      box-shadow: 0 8px 24px -10px rgba(245, 158, 11, 0.28);
+    }
+
+    .bell-wrap {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      background: rgba(251, 191, 36, 0.18);
+      border: 1px solid rgba(251, 191, 36, 0.4);
       display: flex;
       align-items: center;
       justify-content: center;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .bell-shake {
+      display: inline-flex;
+      transform-origin: 50% 4px;
+      animation: bellRing 2.2s ease-in-out infinite;
+    }
+
+    @keyframes bellRing {
+      0%, 100% { transform: rotate(0deg); }
+      6%  { transform: rotate(18deg); }
+      12% { transform: rotate(-16deg); }
+      18% { transform: rotate(14deg); }
+      24% { transform: rotate(-12deg); }
+      30% { transform: rotate(8deg); }
+      36% { transform: rotate(-5deg); }
+      42% { transform: rotate(0deg); }
+    }
+
+    .notice-body {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .notice-title {
+      font-family: 'Chakra Petch', sans-serif;
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      color: #fde047;
+      margin-bottom: 3px;
+    }
+
+    .notice-text {
+      font-size: 0.81rem;
+      font-weight: 600;
+      color: #fef3c7;
+      line-height: 1.45;
+    }
+
+    /* Podium 3D */
+    .podium-wrap {
+      display: grid;
+      grid-template-columns: 1fr 1.12fr 1fr;
+      align-items: end;
+      gap: 9px;
+      margin-bottom: 14px;
+      padding-top: 4px;
+    }
+
+    .podium-card {
+      position: relative;
+      background: var(--bg-panel);
+      backdrop-filter: blur(12px);
+      border-radius: 16px;
+      padding: 14px 8px 12px;
+      text-align: center;
+      border: 1px solid var(--border-subtle);
+      transition: transform 0.25s ease;
+    }
+
+    .podium-card {
+      position: relative;
+      background: var(--bg-panel);
+      backdrop-filter: blur(12px);
+      border-radius: 16px;
+      padding: 14px 8px 12px;
+      text-align: center;
+      border: 1px solid var(--border-subtle);
+      transition: transform 0.25s ease;
+    }
+
+    .podium-card.rank-2 {
+      border-color: rgba(203, 213, 225, 0.35);
+      background: linear-gradient(180deg, rgba(30, 41, 59, 0.85) 0%, rgba(15, 23, 42, 0.92) 100%);
+      box-shadow: 0 10px 25px -10px var(--silver-glow);
+    }
+
+    .podium-card.rank-1 {
+      padding: 18px 8px 15px;
+      border: 1.5px solid rgba(251, 191, 36, 0.65);
+      background: linear-gradient(180deg, rgba(66, 46, 14, 0.55) 0%, rgba(15, 23, 42, 0.95) 65%);
+      box-shadow: 0 14px 32px -8px var(--gold-glow), inset 0 1px 0 rgba(253, 230, 138, 0.35);
+    }
+
+    .podium-card.rank-3 {
+      border-color: rgba(249, 115, 22, 0.35);
+      background: linear-gradient(180deg, rgba(45, 25, 16, 0.65) 0%, rgba(15, 23, 42, 0.92) 100%);
+      box-shadow: 0 10px 25px -10px var(--bronze-glow);
+    }
+
+    .medal-icon {
+      width: 38px;
+      height: 38px;
+      margin: 0 auto 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 12px;
+    }
+
+    .rank-1 .medal-icon {
+      width: 44px;
+      height: 44px;
+      background: radial-gradient(circle, rgba(251, 191, 36, 0.25), transparent 70%);
+    }
+
+    .rank-badge {
+      font-family: 'Chakra Petch', sans-serif;
+      font-size: 0.74rem;
+      font-weight: 700;
+      letter-spacing: 0.6px;
+      margin-bottom: 4px;
+    }
+
+    .rank-1 .rank-badge { color: var(--gold); font-size: 0.8rem; }
+    .rank-2 .rank-badge { color: var(--silver); }
+    .rank-3 .rank-badge { color: #fdba74; }
+
+    .podium-uid {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: #f1f5f9;
+      word-break: break-all;
+      margin-bottom: 3px;
+    }
+
+    .podium-pts {
+      font-family: 'Chakra Petch', sans-serif;
+      font-size: 0.92rem;
+      font-weight: 700;
+      color: #60a5fa;
+      margin-bottom: 8px;
+    }
+
+    .rank-1 .podium-pts {
+      color: #fde047;
+      font-size: 1rem;
+    }
+
+    .prize-pill {
+      display: inline-block;
+      width: 100%;
+      padding: 4px 6px;
+      border-radius: 8px;
+      font-size: 0.69rem;
+      font-weight: 700;
+      letter-spacing: 0.2px;
+    }
+
+    .rank-1 .prize-pill {
+      background: linear-gradient(90deg, rgba(245, 158, 11, 0.25), rgba(234, 179, 8, 0.15));
+      color: #fef08a;
+      border: 1px solid rgba(251, 191, 36, 0.4);
+    }
+
+    .rank-2 .prize-pill {
+      background: rgba(56, 189, 248, 0.14);
+      color: #7dd3fc;
+      border: 1px solid rgba(56, 189, 248, 0.3);
+    }
+
+    .rank-3 .prize-pill {
+      background: rgba(249, 115, 22, 0.14);
+      color: #fdba74;
+      border: 1px solid rgba(249, 115, 22, 0.3);
+    }
+
+    /* Expand Top 4-10 */
+    .btn-top10 {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--bg-panel);
+      border: 1px solid var(--border-subtle);
+      color: #e2e8f0;
+      padding: 11px 14px;
+      border-radius: 12px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      margin-bottom: 20px;
+      transition: border-color 0.2s, background 0.2s;
+    }
+
+    .btn-top10:hover {
+      border-color: rgba(59, 130, 246, 0.45);
+      background: rgba(30, 41, 59, 0.85);
+    }
+
+    .btn-top10 .sub-prize {
+      font-size: 0.72rem;
+      color: #fde68a;
+      background: rgba(251, 191, 36, 0.15);
+      border: 1px solid rgba(251, 191, 36, 0.3);
+      padding: 2px 8px;
+      border-radius: 6px;
+    }
+
+    .top10-drawer {
+      display: none;
+      background: var(--bg-panel-solid);
+      border: 1px solid var(--border-subtle);
+      border-radius: 14px;
+      padding: 8px 14px;
+      margin-top: -12px;
+      margin-bottom: 20px;
+    }
+
+    .top10-drawer.open {
+      display: block;
+      animation: fadeSlide 0.22s ease;
+    }
+
+    @keyframes fadeSlide {
+      from { opacity: 0; transform: translateY(-6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .top10-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 9px 2px;
+      border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+      font-size: 0.83rem;
+    }
+
+    .top10-item:last-child { border-bottom: none; }
+
+    .top10-rank {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 24px;
+      height: 24px;
+      border-radius: 6px;
+      background: rgba(148, 163, 184, 0.12);
+      font-family: 'Chakra Petch', sans-serif;
+      font-weight: 700;
+      font-size: 0.75rem;
+      color: #cbd5e1;
+      margin-right: 8px;
+    }
+
+    .top10-reward {
+      font-size: 0.72rem;
+      color: #fde047;
+      background: rgba(251, 191, 36, 0.12);
+      padding: 2px 7px;
+      border-radius: 6px;
+      margin-left: 6px;
+      font-weight: 700;
+    }
+
+    /* Section Heading */
+    .sec-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+
+    .sec-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: 'Chakra Petch', sans-serif;
+      font-size: 1.02rem;
+      font-weight: 700;
+      letter-spacing: 0.4px;
+      text-transform: uppercase;
+      color: #f8fafc;
+    }
+
+    .sec-reset-note {
+      font-size: 0.73rem;
+      color: var(--text-dim);
+    }
+
+    /* UID Locker Panel */
+    .uid-panel {
+      background: linear-gradient(160deg, rgba(15, 23, 42, 0.92), rgba(10, 15, 30, 0.96));
+      border: 1px solid rgba(59, 130, 246, 0.25);
+      border-radius: 16px;
+      padding: 15px;
+      margin-bottom: 16px;
+      box-shadow: 0 10px 28px -12px rgba(0, 0, 0, 0.6);
+    }
+
+    .uid-label {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: #cbd5e1;
+      margin-bottom: 10px;
+    }
+
+    .uid-row {
+      display: flex;
+      gap: 9px;
+    }
+
+    .uid-field {
+      flex: 1;
+      background: #060a14;
+      border: 1px solid rgba(148, 163, 184, 0.24);
+      color: #ffffff;
+      padding: 11px 13px;
+      border-radius: 11px;
+      font-family: 'Chakra Petch', sans-serif;
+      font-size: 0.98rem;
+      font-weight: 700;
+      letter-spacing: 0.6px;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .uid-field:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+    }
+
+    .uid-field:disabled {
+      color: #6ee7b7;
+      border-color: rgba(16, 185, 129, 0.4);
+      background: rgba(6, 78, 59, 0.18);
+    }
+
+    .btn-uid {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: linear-gradient(135deg, #2563eb, #1d4ed8);
+      color: #fff;
+      border: none;
+      padding: 0 16px;
+      border-radius: 11px;
+      font-size: 0.83rem;
+      font-weight: 700;
+      cursor: pointer;
+      white-space: nowrap;
+      box-shadow: 0 6px 16px -4px rgba(37, 99, 235, 0.55);
+      transition: transform 0.15s, filter 0.2s;
+    }
+
+    .btn-uid:active { transform: scale(0.97); }
+
+    .btn-uid.locked {
+      background: linear-gradient(135deg, #059669, #047857);
+      box-shadow: 0 6px 16px -4px rgba(16, 185, 129, 0.45);
+    }
+
+    /* Player Quick Stats Bar */
+    .player-stats {
+      display: none;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid rgba(148, 163, 184, 0.14);
+    }
+
+    .player-stats.show {
+      display: grid;
+    }
+
+    .stat-chip {
+      background: rgba(6, 10, 20, 0.75);
+      border: 1px solid rgba(148, 163, 184, 0.14);
+      border-radius: 10px;
+      padding: 8px 6px;
+      text-align: center;
+    }
+
+    .stat-k {
+      font-size: 0.68rem;
+      color: var(--text-dim);
+      margin-bottom: 2px;
+    }
+
+    .stat-v {
+      font-family: 'Chakra Petch', sans-serif;
+      font-size: 0.92rem;
+      font-weight: 700;
+      color: #f8fafc;
+    }
+
+    .stat-v.gold { color: var(--gold); }
+    .stat-v.green { color: #34d399; }
+
+    /* Mission Cards */
+    .mission-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 11px;
+    }
+
+    .m-card {
+      position: relative;
+      background: var(--bg-panel);
+      border: 1px solid var(--border-subtle);
+      border-radius: 15px;
+      padding: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+
+    .m-card:not(.done):hover {
+      border-color: rgba(59, 130, 246, 0.45);
+    }
+
+    .m-card.done {
+      opacity: 0.62;
+      background: rgba(15, 23, 42, 0.45);
+    }
+
+    .m-left {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .m-top {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 6px;
+    }
+
+    .m-num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 22px;
+      height: 22px;
+      border-radius: 6px;
+      background: rgba(59, 130, 246, 0.18);
+      color: #93c5fd;
+      font-family: 'Chakra Petch', sans-serif;
+      font-size: 0.78rem;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .m-name {
+      font-size: 0.94rem;
+      font-weight: 700;
+      color: #f8fafc;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .m-tags {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 7px;
+      margin-bottom: 8px;
+    }
+
+    .tag-gate {
+      font-size: 0.72rem;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 6px;
+      background: rgba(168, 85, 247, 0.16);
+      color: #d8b4fe;
+      border: 1px solid rgba(168, 85, 247, 0.28);
+    }
+
+    .tag-quota {
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 6px;
+      background: rgba(59, 130, 246, 0.15);
+      color: #93c5fd;
+    }
+
+    .tag-pts {
+      font-family: 'Chakra Petch', sans-serif;
+      font-size: 0.84rem;
+      font-weight: 700;
+      color: #34d399;
+    }
+
+    .m-bar-bg {
+      width: 100%;
+      height: 5px;
+      border-radius: 999px;
+      background: rgba(148, 163, 184, 0.14);
+      overflow: hidden;
+    }
+
+    .m-bar-fill {
+      height: 100%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #3b82f6, #10b981);
+      transition: width 0.35s ease;
+    }
+
+    .btn-go {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      min-width: 104px;
+      padding: 11px 14px;
+      border-radius: 11px;
+      border: none;
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: #ffffff;
+      background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+      box-shadow: 0 6px 16px -4px rgba(37, 99, 235, 0.55);
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: transform 0.15s, opacity 0.2s;
+    }
+
+    .btn-go:active:not(:disabled) {
+      transform: scale(0.96);
+    }
+
+    .btn-go:disabled {
+      background: #1e293b;
+      color: #64748b;
+      box-shadow: none;
+      cursor: not-allowed;
+      border: 1px solid rgba(148, 163, 184, 0.14);
+    }
+
+    /* Toast Notification */
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 24px;
+      transform: translate(-50%, 120%);
       background: #0f172a;
       color: #f8fafc;
-      padding: 16px;
-    }
-    .card {
-      width: 100%;
-      max-width: 420px;
-      background: #1e293b;
-      border: 1px solid #334155;
-      border-radius: 16px;
-      padding: 24px;
-      text-align: center;
-      box-shadow: 0 20px 45px rgba(0, 0, 0, 0.35);
-    }
-    h1 {
-      margin: 0 0 8px;
-      font-size: 22px;
-    }
-    p {
-      margin: 0 0 18px;
-      color: #94a3b8;
-      font-size: 14px;
-      line-height: 1.5;
-    }
-    .key-box {
-      background: #0f172a;
-      border: 1px solid #38bdf8;
+      border: 1px solid rgba(59, 130, 246, 0.45);
+      padding: 12px 18px;
       border-radius: 12px;
-      padding: 16px;
-      font-size: 20px;
-      font-weight: 700;
-      letter-spacing: 1px;
-      color: #38bdf8;
-      margin-bottom: 16px;
-      word-break: break-all;
-      user-select: all;
-    }
-    button {
-      cursor: pointer;
-      border: none;
-      border-radius: 10px;
-      padding: 11px 18px;
-      font-size: 14px;
+      font-size: 0.84rem;
       font-weight: 600;
-      background: #22c55e;
-      color: #052e16;
-      transition: transform 0.1s ease, opacity 0.15s ease;
+      box-shadow: 0 14px 30px rgba(0, 0, 0, 0.65);
+      z-index: 9999;
+      max-width: 90vw;
+      text-align: center;
+      opacity: 0;
+      transition: transform 0.28s ease, opacity 0.28s ease;
     }
-    button:active {
-      transform: scale(0.98);
+
+    .toast.show {
+      transform: translate(-50%, 0);
+      opacity: 1;
     }
-    .note {
-      margin-top: 14px;
-      font-size: 12px;
-      color: #64748b;
-    }
+
+    .toast.ok { border-color: rgba(16, 185, 129, 0.65); color: #6ee7b7; }
+    .toast.err { border-color: rgba(239, 68, 68, 0.65); color: #fca5a5; }
   </style>
 </head>
 <body>
-  <div class="card">
-    <h1>🔑 Key Của Bạn</h1>
-    <p>Tải lại trang (F5) vẫn giữ nguyên key này. Copy key rồi quay lại bot Telegram để xác nhận.</p>
+  <div class="container">
+    <!-- Hero Header -->
+    <header class="hero-banner">
+      <div class="live-pill">
+        <span class="live-dot"></span> SỰ KIỆN ĐANG DIỄN RA
+      </div>
+      <h1>Đua Top Nhiệm Vụ Free Fire</h1>
+      <p>Hoàn thành vượt link mỗi ngày để tích lũy điểm — Top cao nhất nhận quà trực tiếp vào UID</p>
 
-    <div id="keyBox" class="key-box">Đang tải...</div>
-    <button id="copyBtn" onclick="copyKey()">📋 Sao chép key</button>
+      <!-- Countdown to 31/12/2026 23:59:59 (+07:00) -->
+      <div class="countdown-box">
+        <div class="countdown-label">Thời gian đua top còn lại</div>
+        <div class="countdown-grid">
+          <div class="cd-cell">
+            <div class="cd-num" id="cdDays">00</div>
+            <div class="cd-unit">Ngày</div>
+          </div>
+          <div class="cd-cell">
+            <div class="cd-num" id="cdHours">00</div>
+            <div class="cd-unit">Giờ</div>
+          </div>
+          <div class="cd-cell">
+            <div class="cd-num" id="cdMins">00</div>
+            <div class="cd-unit">Phút</div>
+          </div>
+          <div class="cd-cell">
+            <div class="cd-num" id="cdSecs">00</div>
+            <div class="cd-unit">Giây</div>
+          </div>
+        </div>
+      </div>
+    </header>
 
-    <div class="note">Mỗi key chỉ sử dụng hợp lệ 1 lần khi xác nhận trên bot.</div>
+    <!-- Notice Box with Shaking Bell -->
+    <div class="notice-card" role="alert">
+      <div class="bell-wrap">
+        <span class="bell-shake">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fbbf24" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+            <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+          </svg>
+        </span>
+      </div>
+      <div class="notice-body">
+        <div class="notice-title">Thông Báo Hệ Thống</div>
+        <div class="notice-text">Mọi điểm được tính hợp lệ, số điểm đã được lưu vào data check ra gian lận điểm sẽ bị trừ điểm gian lận đó !</div>
+      </div>
+    </div>
+
+    <!-- Top 1 - 3 Podium -->
+    <section class="podium-wrap">
+      <!-- Rank 2 -->
+      <div class="podium-card rank-2">
+        <div class="medal-icon">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
+            <path d="M12 2L15 8L21 9L16.5 14L17.5 20L12 17L6.5 20L7.5 14L3 9L9 8L12 2Z" fill="#cbd5e1" stroke="#f8fafc" stroke-width="1.2"/>
+          </svg>
+        </div>
+        <div class="rank-badge">HẠNG 2</div>
+        <div class="podium-uid" id="top2Uid">Chưa có</div>
+        <div class="podium-pts" id="top2Pts">0 điểm</div>
+        <span class="prize-pill">x2 Thẻ Tuần</span>
+      </div>
+
+      <!-- Rank 1 -->
+      <div class="podium-card rank-1">
+        <div class="medal-icon">
+          <svg width="38" height="38" viewBox="0 0 24 24" fill="none">
+            <path d="M3 17L5 7L9.5 11L12 5L14.5 11L19 7L21 17H3Z" fill="#fbbf24" stroke="#fef08a" stroke-width="1.3" stroke-linejoin="round"/>
+            <rect x="4" y="18.5" width="16" height="2.2" rx="1" fill="#f59e0b"/>
+          </svg>
+        </div>
+        <div class="rank-badge">👑 HẠNG 1</div>
+        <div class="podium-uid" id="top1Uid">Chưa có</div>
+        <div class="podium-pts" id="top1Pts">0 điểm</div>
+        <span class="prize-pill">x3 Thẻ Tuần</span>
+      </div>
+
+      <!-- Rank 3 -->
+      <div class="podium-card rank-3">
+        <div class="medal-icon">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
+            <path d="M12 2L15 8L21 9L16.5 14L17.5 20L12 17L6.5 20L7.5 14L3 9L9 8L12 2Z" fill="#fb923c" stroke="#fed7aa" stroke-width="1.2"/>
+          </svg>
+        </div>
+        <div class="rank-badge">HẠNG 3</div>
+        <div class="podium-uid" id="top3Uid">Chưa có</div>
+        <div class="podium-pts" id="top3Pts">0 điểm</div>
+        <span class="prize-pill">x1 Thẻ Tuần</span>
+      </div>
+    </section>
+
+    <!-- Top 4 - 10 Drawer -->
+    <button type="button" class="btn-top10" onclick="toggleTop10()">
+      <span>▾ Bảng xếp hạng Top 4 – Top 10</span>
+      <span class="sub-prize">50 KC / giải</span>
+    </button>
+    <div class="top10-drawer" id="top4To10Box"></div>
+
+    <!-- Mission Section -->
+    <div class="sec-head">
+      <div class="sec-title">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2.4">
+          <circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/><line x1="12" y1="2" x2="12" y2="5"/>
+        </svg>
+        Khu Vực Làm Nhiệm Vụ
+      </div>
+      <span class="sec-reset-note">Reset lượt 00:00</span>
+    </div>
+
+    <!-- UID Panel -->
+    <div class="uid-panel">
+      <div class="uid-label">
+        <span>Nhập ID Free Fire nhận điểm</span>
+        <span id="uidHint" style="color:#93c5fd;font-size:0.74rem;">Bắt buộc khóa ID</span>
+      </div>
+      <div class="uid-row">
+        <input
+          type="text"
+          id="ffUidInput"
+          class="uid-field"
+          placeholder="Nhập UID (VD: 2230853045)"
+          inputmode="numeric"
+        />
+        <button type="button" id="lockUidBtn" class="btn-uid" onclick="toggleLockUid()">
+          🔓 Khóa ID
+        </button>
+      </div>
+
+      <!-- Quick Stats for Locked UID -->
+      <div class="player-stats" id="playerStatsBox">
+        <div class="stat-chip">
+          <div class="stat-k">Điểm của bạn</div>
+          <div class="stat-v gold" id="myPointsVal">0</div>
+        </div>
+        <div class="stat-chip">
+          <div class="stat-k">Thứ hạng BXH</div>
+          <div class="stat-v" id="myRankVal">—</div>
+        </div>
+        <div class="stat-chip">
+          <div class="stat-k">Lượt hôm nay</div>
+          <div class="stat-v green" id="myQuotaVal">0/24</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mission Cards -->
+    <div class="mission-stack" id="missionsList"></div>
   </div>
 
-  <script>
-    // Thay danh sách dưới đây bằng đúng bộ key bạn đã nạp cho bot bằng lệnh /addkey
-    const KEY_POOL = [
-      "KEY_A1B2C3D4",
-      "KEY_E5F6G7H8",
-      "KEY_I9J0K1L2",
-      "KEY_M3N4O5P6",
-      "KEY_Q7R8S9T0",
-      "KEY_U1V2W3X4",
-      "KEY_Y5Z6A7B8",
-      "KEY_C9D0E1F2",
-      "TLZ-PRO_TOKEN-M8K4P2X",
-"TLZ-PRO_TOKEN-7R9N3W5",
-"TLZ-PRO_TOKEN-Q2V6Y8L",
-"TLZ-PRO_TOKEN-5H8T4C9",
-"TLZ-PRO_TOKEN-J3B7Z2M",
-"TLZ-PRO_TOKEN-9X5K8P4",
-"TLZ-PRO_TOKEN-4N2W7R6",
-"TLZ-PRO_TOKEN-L8Y3Q5V",
-"TLZ-PRO_TOKEN-6C9T2H7",
-"TLZ-PRO_TOKEN-Z4M8B3J",
-"TLZ-PRO_TOKEN-2P7X5K9",
-"TLZ-PRO_TOKEN-8R3W6N4",
-"TLZ-PRO_TOKEN-5Y9L2Q8",
-"TLZ-PRO_TOKEN-V7H4C3T",
-"TLZ-PRO_TOKEN-3B8Z6M5",
-"TLZ-PRO_TOKEN-K9P2X7R",
-"TLZ-PRO_TOKEN-4W5N8Y3",
-"TLZ-PRO_TOKEN-Q6L3V9H",
-"TLZ-PRO_TOKEN-7T2C5B8",
-"TLZ-PRO_TOKEN-M4Z9J6K",
-"TLZ-PRO_TOKEN-8X3P7W2",
-"TLZ-PRO_TOKEN-5N9R4Y6",
-"TLZ-PRO_TOKEN-L2Q8V5C",
-"TLZ-PRO_TOKEN-9H6T3B7",
-"TLZ-PRO_TOKEN-3Z7M4K8",
-"TLZ-PRO_TOKEN-6P2X9W5",
-"TLZ-PRO_TOKEN-4R8N3Y7",
-"TLZ-PRO_TOKEN-V5L6Q2T",
-"TLZ-PRO_TOKEN-7C9H4B3",
-"TLZ-PRO_TOKEN-2M8Z5J6",
-"TLZ-PRO_TOKEN-9K4P7X3",
-"TLZ-PRO_TOKEN-5W2N8R6",
-"TLZ-PRO_TOKEN-8Y6L3Q9",
-"TLZ-PRO_TOKEN-4V7H2C5",
-"TLZ-PRO_TOKEN-3T9B6Z8",
-"TLZ-PRO_TOKEN-6J4M5K2",
-"TLZ-PRO_TOKEN-7X8P3W9",
-"TLZ-PRO_TOKEN-2N5R9Y4",
-"TLZ-PRO_TOKEN-8L3Q6V7",
-"TLZ-PRO_TOKEN-5H9T4C2",
-"TLZ-PRO_TOKEN-3B6Z8M7",
-"TLZ-PRO_TOKEN-9P4X2K5",
-"TLZ-PRO_TOKEN-6W7N3R8",
-"TLZ-PRO_TOKEN-4Y2L9Q5",
-"TLZ-PRO_TOKEN-7V5H8C3",
-"TLZ-PRO_TOKEN-2T8B4Z6",
-"TLZ-PRO_TOKEN-9M3J7K5",
-"TLZ-PRO_TOKEN-5X6P2W8",
-"TLZ-PRO_TOKEN-8R4N9Y3",
-"TLZ-PRO_TOKEN-3L7Q5V6",
-"TLZ-PRO_TOKEN-6H2T8C4",
-"TLZ-PRO_TOKEN-9Z5B3M7",
-"TLZ-PRO_TOKEN-4K8P6X2",
-"TLZ-PRO_TOKEN-7W3N5R9",
-"TLZ-PRO_TOKEN-2Y9L4Q6",
-"TLZ-PRO_TOKEN-8V6H7C3",
-"TLZ-PRO_TOKEN-5T3B9Z2",
-"TLZ-PRO_TOKEN-3J7M8K4",
-"TLZ-PRO_TOKEN-6X5P2W9",
-"TLZ-PRO_TOKEN-9R8N4Y7",
-"TLZ-PRO_TOKEN-4L2Q6V5",
-"TLZ-PRO_TOKEN-7H9T3C8",
-"TLZ-PRO_TOKEN-2Z4B5M6",
-"TLZ-PRO_TOKEN-8K7P9X3",
-"TLZ-PRO_TOKEN-5W6N2R4",
-"TLZ-PRO_TOKEN-3Y8L7Q9",
-"TLZ-PRO_TOKEN-6V4H5C2",
-"TLZ-PRO_TOKEN-9T2B8Z7",
-"TLZ-PRO_TOKEN-4J5M3K6",
-"TLZ-PRO_TOKEN-7X9P6W8",
-"TLZ-PRO_TOKEN-2R3N7Y5",
-"TLZ-PRO_TOKEN-8L6Q4V9",
-"TLZ-PRO_TOKEN-5H2T8C7",
-"TLZ-PRO_TOKEN-3Z9B6M4",
-"TLZ-PRO_TOKEN-6K7P5X2",
-"TLZ-PRO_TOKEN-9W4N8R3",
-"TLZ-PRO_TOKEN-4Y6L2Q7",
-"TLZ-PRO_TOKEN-7V3H9C5",
-"TLZ-PRO_TOKEN-2T5B4Z8",
-"TLZ-PRO_TOKEN-8J9M7K3",
-"TLZ-PRO_TOKEN-5X2P6W4",
-"TLZ-PRO_TOKEN-3R8N9Y6",
-"TLZ-PRO_TOKEN-6L5Q7V2",
-"TLZ-PRO_TOKEN-9H4T3C8",
-"TLZ-PRO_TOKEN-4Z7B2M5",
-"TLZ-PRO_TOKEN-7K6P8X9",
-"TLZ-PRO_TOKEN-2W9N5R3",
-"TLZ-PRO_TOKEN-8Y4L6Q7",
-"TLZ-PRO_TOKEN-5V7H3C9",
-"TLZ-PRO_TOKEN-3T2B8Z6",
-"TLZ-PRO_TOKEN-6J9M4K5",
-"TLZ-PRO_TOKEN-9X7P2W8",
-"TLZ-PRO_TOKEN-4R5N6Y3",
-"TLZ-PRO_TOKEN-7L8Q9V2",
-"TLZ-PRO_TOKEN-2H6T5C4",
-"TLZ-PRO_TOKEN-8Z3B7M9",
-"TLZ-PRO_TOKEN-5K4P2X6",
-"TLZ-PRO_TOKEN-3W9N8R7",
-"TLZ-PRO_TOKEN-6Y5L4Q2",
-"TLZ-PRO_TOKEN-9V8H7C3"
+  <div class="toast" id="toastBox"></div>
 
+  <script>
+    // Dán URL Web App Google Apps Script của bạn vào đây
+    const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwPYmmowiaLOSyZclq6tKU2DzxVQNnBUjC2OUCxn3W8xlATYnkhf2K5mFWlirUbZOzL/exec';
+
+    // Mốc đích: 31/12/2026 23:59:59 giờ Việt Nam (+07:00)
+    const EVENT_END_TIMESTAMP = new Date('2026-12-31T23:59:59+07:00').getTime();
+
+    const MISSIONS = [
+      { id: 'sitetop',    name: 'Nhiệm vụ Sitetop',                     tag: 'Sitetop',    points: 528,  maxDaily: 2 },
+      { id: 'link4m',     name: 'Nhiệm vụ Link4m',                      tag: 'Link4m',     points: 250,  maxDaily: 2 },
+      { id: 'gtraffic',   name: 'Nhiệm vụ Gtraffic',                    tag: 'Gtraffic',   points: 660,  maxDaily: 2 },
+      { id: 'trafficso1', name: 'Nhiệm vụ Trafficso1',                  tag: 'Trafficso1', points: 675,  maxDaily: 2 },
+      { id: 'lentop',     name: 'Nhiệm vụ Lentop',                      tag: 'Lentop',     points: 600,  maxDaily: 2 },
+      { id: 'azlink',     name: 'Nhiệm vụ Azlink',                      tag: 'Azlink',     points: 888,  maxDaily: 2 },
+      { id: 'trafficvn',  name: 'Nhiệm vụ Trafficvn',                   tag: 'Trafficvn',  points: 400,  maxDaily: 3 },
+      { id: 'traffictop', name: 'Nhiệm vụ TrafficTop',                  tag: 'TrafficTop', points: 636,  maxDaily: 1 },
+      { id: 'bbmtks',     name: 'Nhiệm vụ Bbmtks',                      tag: 'Bbmtks',     points: 767,  maxDaily: 1 },
+      { id: 'traffic24h', name: 'Nhiệm vụ Traffic24h',                  tag: 'Traffic24h', points: 760,  maxDaily: 1 },
+      { id: 'phienchoso', name: 'Nhiệm vụ Phienchoso (Sớm thì còn NV)', tag: 'Phienchoso', points: 3500, maxDaily: 1 },
+      { id: 'traffic2k',  name: 'Nhiệm vụ 2ktraffic',                   tag: '2ktraffic',  points: 1250, maxDaily: 4 },
+      { id: 'alolink',    name: 'Nhiệm vụ Alolink',                     tag: 'Alolink',    points: 100,  maxDaily: 1 }
     ];
 
-    // Đổi tên khóa lưu trữ (ví dụ v2, v3...) nếu sau này bạn muốn reset key mới cho mọi người
-    const STORAGE_KEY_NAME = "fixed_random_key_v1";
+    let lockedUid = localStorage.getItem('ff_locked_uid') || '';
+    let dailyUsage = {};
+    let cachedLeaderboard = [];
+    let toastTimer = null;
 
-    function getFixedKey() {
-      const saved = localStorage.getItem(STORAGE_KEY_NAME);
-      if (saved) {
-        return saved;
-      }
-      if (!KEY_POOL.length) {
-        return "HET_KEY";
-      }
-      const randomIndex = Math.floor(Math.random() * KEY_POOL.length);
-      const chosen = KEY_POOL[randomIndex];
-      localStorage.setItem(STORAGE_KEY_NAME, chosen);
-      return chosen;
+    function pad2(n) {
+      return String(Math.max(0, Math.floor(n))).padStart(2, '0');
     }
 
-    const currentKey = getFixedKey();
-    document.getElementById("keyBox").textContent = currentKey;
+    function updateCountdown() {
+      const diff = Math.max(0, EVENT_END_TIMESTAMP - Date.now());
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+      const mins = Math.floor((diff / (1000 * 60)) % 60);
+      const secs = Math.floor((diff / 1000) % 60);
 
-    function copyKey() {
-      if (!currentKey || currentKey === "HET_KEY") return;
-      navigator.clipboard.writeText(currentKey).then(() => {
-        const btn = document.getElementById("copyBtn");
-        btn.textContent = "✅ Đã sao chép!";
-        setTimeout(() => {
-          btn.textContent = "📋 Sao chép key";
-        }, 1800);
-      }).catch(() => {
-        alert("Hãy bôi đen và copy thủ công: " + currentKey);
+      document.getElementById('cdDays').textContent = String(days).padStart(2, '0');
+      document.getElementById('cdHours').textContent = pad2(hours);
+      document.getElementById('cdMins').textContent = pad2(mins);
+      document.getElementById('cdSecs').textContent = pad2(secs);
+    }
+
+    function showToast(msg, type = '') {
+      const el = document.getElementById('toastBox');
+      if (!el) return;
+      el.textContent = msg;
+      el.className = 'toast show' + (type ? ' ' + type : '');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => {
+        el.classList.remove('show');
+      }, 3400);
+    }
+
+    function formatNumber(n) {
+      return Number(n || 0).toLocaleString('vi-VN');
+    }
+
+    function updatePlayerStats() {
+      const box = document.getElementById('playerStatsBox');
+      if (!lockedUid) {
+        box.classList.remove('show');
+        return;
+      }
+      box.classList.add('show');
+
+      let totalDone = 0;
+      let totalMax = 0;
+      MISSIONS.forEach(m => {
+        const done = (dailyUsage[m.id] && Number(dailyUsage[m.id].done)) || 0;
+        totalDone += Math.min(done, m.maxDaily);
+        totalMax += m.maxDaily;
       });
+      document.getElementById('myQuotaVal').textContent = `${totalDone}/${totalMax}`;
+
+      const idx = cachedLeaderboard.findIndex(item => String(item.uid) === String(lockedUid));
+      if (idx !== -1) {
+        document.getElementById('myPointsVal').textContent = formatNumber(cachedLeaderboard[idx].points);
+        document.getElementById('myRankVal').textContent = `#${idx + 1}`;
+      } else {
+        document.getElementById('myPointsVal').textContent = '0';
+        document.getElementById('myRankVal').textContent = 'Chưa xếp hạng';
+      }
     }
+
+    function syncUidUI() {
+      const input = document.getElementById('ffUidInput');
+      const btn = document.getElementById('lockUidBtn');
+      const hint = document.getElementById('uidHint');
+
+      if (lockedUid) {
+        input.value = lockedUid;
+        input.disabled = true;
+        btn.textContent = '🔒 Đã Khóa';
+        btn.classList.add('locked');
+        hint.textContent = 'Bấm để đổi UID';
+        hint.style.color = '#6ee7b7';
+      } else {
+        input.value = '';
+        input.disabled = false;
+        btn.textContent = '🔓 Khóa ID';
+        btn.classList.remove('locked');
+        hint.textContent = 'Bắt buộc khóa ID';
+        hint.style.color = '#93c5fd';
+      }
+      updatePlayerStats();
+    }
+
+    function toggleLockUid() {
+      const input = document.getElementById('ffUidInput');
+      if (lockedUid) {
+        lockedUid = '';
+        localStorage.removeItem('ff_locked_uid');
+        dailyUsage = {};
+        syncUidUI();
+        renderMissions();
+        showToast('Đã mở khóa ID, bạn có thể nhập UID mới.');
+        return;
+      }
+
+      const clean = String(input.value || '').replace(/\D/g, '').trim();
+      if (!clean || clean.length < 5) {
+        showToast('Vui lòng nhập ID Free Fire hợp lệ (tối thiểu 5 số)!', 'err');
+        return;
+      }
+
+      lockedUid = clean;
+      localStorage.setItem('ff_locked_uid', lockedUid);
+      syncUidUI();
+      fetchDailyStatus();
+      showToast(`Đã khóa cố định UID: ${lockedUid}`, 'ok');
+    }
+
+    function toggleTop10() {
+      document.getElementById('top4To10Box').classList.toggle('open');
+    }
+
+    function renderMissions() {
+      const container = document.getElementById('missionsList');
+      if (!container) return;
+
+      container.innerHTML = MISSIONS.map((g, idx) => {
+        const u = (dailyUsage && dailyUsage[g.id]) ? dailyUsage[g.id] : { done: 0, maxDaily: g.maxDaily };
+        const done = Math.min(Math.max(Number(u.done || 0), 0), g.maxDaily);
+        const pct = Math.round((done / g.maxDaily) * 100);
+        const isDoneAll = done >= g.maxDaily;
+
+        return `
+          <div class="m-card ${isDoneAll ? 'done' : ''}">
+            <div class="m-left">
+              <div class="m-top">
+                <span class="m-num">${idx + 1}</span>
+                <span class="m-name">${g.name}</span>
+              </div>
+              <div class="m-tags">
+                <span class="tag-gate">${g.tag}</span>
+                <span class="tag-quota">Lượt ${done}/${g.maxDaily}</span>
+                <span class="tag-pts">+${formatNumber(g.points)} điểm</span>
+              </div>
+              <div class="m-bar-bg">
+                <div class="m-bar-fill" style="width:${pct}%"></div>
+              </div>
+            </div>
+            <button
+              type="button"
+              id="btn_${g.id}"
+              class="btn-go"
+              ${isDoneAll ? 'disabled' : `onclick="startMission('${g.id}')"`}
+            >
+              ${isDoneAll ? '✓ Hết Lượt' : 'Làm Ngay →'}
+            </button>
+          </div>
+        `;
+      }).join('');
+
+      updatePlayerStats();
+    }
+
+    async function startMission(groupId) {
+      if (!lockedUid) {
+        showToast('Vui lòng nhập và khóa ID Free Fire trước!', 'err');
+        document.getElementById('ffUidInput').focus();
+        return;
+      }
+
+      const btn = document.getElementById(`btn_${groupId}`);
+      const oldText = btn ? btn.textContent : '';
+      if (btn) {
+        btn.disabled = true;
+        btn.textContent = 'Đang tạo...';
+      }
+
+      try {
+        const url = `${GAS_WEB_APP_URL}?action=create_task&uid=${encodeURIComponent(lockedUid)}&groupId=${encodeURIComponent(groupId)}`;
+        const res = await fetch(url);
+        const data = await res.json();
+
+        if (!data.ok || !data.shortUrl) {
+          showToast(data.error || 'Không tạo được link nhiệm vụ!', 'err');
+          if (btn) {
+            btn.disabled = false;
+            btn.textContent = oldText;
+          }
+          return;
+        }
+
+        window.location.href = data.shortUrl;
+      } catch (err) {
+        showToast('Lỗi kết nối máy chủ khi tạo nhiệm vụ!', 'err');
+        if (btn) {
+          btn.disabled = false;
+          btn.textContent = oldText;
+        }
+      }
+    }
+
+    async function checkAndClaimTokenOnLoad() {
+      const currentUrl = new URL(window.location.href);
+      const token = currentUrl.searchParams.get('token');
+      if (!token) return;
+
+      currentUrl.searchParams.delete('token');
+      window.history.replaceState({}, document.title, currentUrl.toString());
+
+      try {
+        const res = await fetch(`${GAS_WEB_APP_URL}?action=claim_token&token=${encodeURIComponent(token)}`);
+        const data = await res.json();
+
+        if (data.ok) {
+          if (data.uid) {
+            lockedUid = String(data.uid).replace(/\D/g, '').trim();
+            localStorage.setItem('ff_locked_uid', lockedUid);
+            syncUidUI();
+          }
+          showToast(`🎉 Cộng thành công +${formatNumber(data.addedPoints)} điểm!`, 'ok');
+        } else {
+          showToast(data.error || 'Token không hợp lệ hoặc đã dùng!', 'err');
+        }
+      } catch (err) {
+        showToast('Lỗi khi xác nhận điểm từ token!', 'err');
+      }
+    }
+
+    async function fetchDailyStatus() {
+      if (!lockedUid) {
+        dailyUsage = {};
+        renderMissions();
+        return;
+      }
+      try {
+        const res = await fetch(`${GAS_WEB_APP_URL}?action=daily_status&uid=${encodeURIComponent(lockedUid)}`);
+        const data = await res.json();
+        if (data.ok && data.usage) dailyUsage = data.usage;
+      } catch (_) {}
+      renderMissions();
+    }
+
+    async function loadLeaderboard() {
+      try {
+        const res = await fetch(`${GAS_WEB_APP_URL}?action=leaderboard`);
+        const data = await res.json();
+        if (!data.ok || !Array.isArray(data.leaderboard)) return;
+
+        cachedLeaderboard = data.leaderboard;
+        const setSlot = (idx, uidId, ptsId) => {
+          const item = cachedLeaderboard[idx];
+          document.getElementById(uidId).textContent = item ? item.uid : 'Chưa có';
+          document.getElementById(ptsId).textContent = `${formatNumber(item ? item.points : 0)} điểm`;
+        };
+
+        setSlot(0, 'top1Uid', 'top1Pts');
+        setSlot(1, 'top2Uid', 'top2Pts');
+        setSlot(2, 'top3Uid', 'top3Pts');
+
+        const box4_10 = document.getElementById('top4To10Box');
+        const sub = cachedLeaderboard.slice(3, 10);
+        box4_10.innerHTML = !sub.length
+          ? '<div class="top10-item"><span style="color:#94a3b8;">Chưa có dữ liệu Top 4 – Top 10</span><span class="top10-reward">50 KC</span></div>'
+          : sub.map((item, i) => `
+              <div class="top10-item">
+                <span><span class="top10-rank">#${i + 4}</span>${item.uid}</span>
+                <span>
+                  <strong style="color:#60a5fa;font-family:'Chakra Petch',sans-serif;">${formatNumber(item.points)} điểm</strong>
+                  <span class="top10-reward">50 KC</span>
+                </span>
+              </div>
+            `).join('');
+
+        updatePlayerStats();
+      } catch (_) {}
+    }
+
+    (async function init() {
+      updateCountdown();
+      setInterval(updateCountdown, 1000);
+      syncUidUI();
+      renderMissions();
+      await checkAndClaimTokenOnLoad();
+      await Promise.all([fetchDailyStatus(), loadLeaderboard()]);
+    })();
   </script>
 </body>
 </html>
