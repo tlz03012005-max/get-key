@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nhận Key - TLZ</title>
+  <style>
+    * { box-sizing: border-box; font-family: system-ui, -apple-system, sans-serif; }
+    body {
+      margin: 0; min-height: 100vh; display: flex; align-items: center; justify-content: center;
+      background: #0f172a; color: #f8fafc; padding: 16px;
+    }
+    .card {
+      width: 100%; max-width: 420px; background: #1e293b; border: 1px solid #334155;
+      border-radius: 16px; padding: 24px; text-align: center; box-shadow: 0 12px 30px rgba(0,0,0,0.35);
+    }
+    .badge {
+      display: inline-block; background: rgba(56, 189, 248, 0.15); color: #38bdf8;
+      padding: 4px 10px; border-radius: 999px; font-size: 12px; font-weight: 700; margin-bottom: 10px;
+    }
+    h1 { margin: 0 0 8px; font-size: 22px; }
+    p { margin: 0 0 18px; color: #94a3b8; font-size: 14px; line-height: 1.5; }
+    .key-box {
+      background: #0f172a; border: 1px dashed #38bdf8; border-radius: 12px; padding: 14px;
+      font-size: 18px; font-weight: 700; letter-spacing: 1px; color: #38bdf8;
+      word-break: break-all; margin-bottom: 14px;
+    }
+    .key-warn { border-color: #f59e0b; color: #fbbf24; font-size: 15px; }
+    .btn {
+      width: 100%; padding: 12px 16px; border: none; border-radius: 10px;
+      background: #22c55e; color: #052e16; font-weight: 700; font-size: 15px; cursor: pointer;
+    }
+    .btn:disabled { background: #475569; color: #cbd5e1; cursor: not-allowed; }
+    .status { margin-top: 12px; font-size: 13px; color: #4ade80; min-height: 18px; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="badge">BƯỚC 2 / 2</div>
+    <h1>🔑 KEY CỦA BẠN</h1>
+    <p id="descText">Copy key bên dưới rồi quay lại Bot Telegram nhập để nhận coin.</p>
+    <div id="keyBox" class="key-box">Đang kiểm tra...</div>
+    <button id="copyBtn" class="btn" onclick="copyKey()" disabled>📋 Copy Key</button>
+    <div id="statusMsg" class="status"></div>
+  </div>
+
+  <script>
+    const KEY_POOL = [
+      "KEY_A1B2C3D4",
+      "KEY_E5F6G7H8",
+      "KEY_I9J0K1L2",
+      "KEY_M3N4O5P6",
+      "KEY_Q7R8S9T0",
+      "KEY_U1V2W3X4",
+      "KEY_Y5Z6A7B8",
+      "KEY_C9D0E1F2"
+    ];
+
+    const params = new URLSearchParams(window.location.search);
+    const rawUrl = (params.get("url") || "").trim();
+
+    const keyBox = document.getElementById("keyBox");
+    const copyBtn = document.getElementById("copyBtn");
+    const statusMsg = document.getElementById("statusMsg");
+
+    function isValidUrl(u) {
+      try {
+        const parsed = new URL(u);
+        return parsed.protocol === "https:" || parsed.protocol === "http:";
+      } catch (e) {
+        return false;
+      }
+    }
+
+    const unlocked = localStorage.getItem("tlz_gate_unlocked") === "1";
+
+    if (!isValidUrl(rawUrl) || !unlocked) {
+      keyBox.textContent = "KHÔNG HỢP LỆ / CHƯA QUA BƯỚC GET KEY";
+      keyBox.classList.add("key-warn");
+      document.getElementById("descText").textContent =
+        "Vui lòng bắt đầu từ trang Get Key và hoàn thành vượt link có tham số ?url=.";
+      copyBtn.disabled = true;
+    } else {
+      // Khóa vé ngay sau lần mở đầu tiên -> F5 tải lại sẽ ẩn key, không cấp key mới
+      localStorage.removeItem("tlz_gate_unlocked");
+
+      const used = JSON.parse(localStorage.getItem("tlz_used_keys") || "[]");
+      const fresh = KEY_POOL.filter(k => !used.includes(k));
+      const pool = fresh.length > 0 ? fresh : KEY_POOL;
+      const chosenKey = pool[Math.floor(Math.random() * pool.length)];
+
+      if (!used.includes(chosenKey)) {
+        used.push(chosenKey);
+        localStorage.setItem("tlz_used_keys", JSON.stringify(used));
+      }
+
+      keyBox.textContent = chosenKey;
+      copyBtn.disabled = false;
+      copyBtn.dataset.key = chosenKey;
+      statusMsg.textContent = "⚠️ Tải lại trang sẽ ẩn key, cần quay lại bước Get Key để lấy lượt mới.";
+    }
+
+    function copyKey() {
+      const val = copyBtn.dataset.key;
+      if (!val) return;
+      const done = () => { statusMsg.textContent = "✅ Đã copy key: " + val; };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(val).then(done).catch(() => { fallbackCopy(val); done(); });
+      } else {
+        fallbackCopy(val);
+        done();
+      }
+    }
+
+    function fallbackCopy(text) {
+      const ta = document.createElement("textarea");
+      ta.value = text;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand("copy");
+      document.body.removeChild(ta);
+    }
+  </script>
+</body>
+</html>
