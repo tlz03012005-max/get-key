@@ -3,233 +3,58 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Nhận Key - TLZ</title>
+  <title>Get Key - TLZ</title>
   <style>
     * { box-sizing: border-box; font-family: system-ui, -apple-system, sans-serif; }
     body {
-      margin: 0;
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: #0f172a;
-      color: #f8fafc;
-      padding: 16px;
+      margin: 0; min-height: 100vh; display: flex; align-items: center; justify-content: center;
+      background: #0f172a; color: #f8fafc; padding: 16px;
     }
     .card {
-      width: 100%;
-      max-width: 420px;
-      background: #1e293b;
-      border: 1px solid #334155;
-      border-radius: 16px;
-      padding: 24px;
-      text-align: center;
-      box-shadow: 0 12px 30px rgba(0,0,0,0.35);
+      width: 100%; max-width: 420px; background: #1e293b; border: 1px solid #334155;
+      border-radius: 16px; padding: 24px; text-align: center; box-shadow: 0 12px 30px rgba(0,0,0,0.35);
     }
     .badge {
-      display: inline-block;
-      background: rgba(56, 189, 248, 0.15);
-      color: #38bdf8;
-      padding: 4px 10px;
-      border-radius: 999px;
-      font-size: 12px;
-      font-weight: 700;
-      margin-bottom: 10px;
+      display: inline-block; background: rgba(56, 189, 248, 0.15); color: #38bdf8;
+      padding: 4px 10px; border-radius: 999px; font-size: 12px; font-weight: 700; margin-bottom: 10px;
     }
     h1 { margin: 0 0 8px; font-size: 22px; }
     p { margin: 0 0 18px; color: #94a3b8; font-size: 14px; line-height: 1.5; }
-    .key-box {
-      background: #0f172a;
-      border: 1px dashed #38bdf8;
-      border-radius: 12px;
-      padding: 14px;
-      font-size: 18px;
-      font-weight: 700;
-      letter-spacing: 1px;
-      color: #38bdf8;
-      word-break: break-all;
-      margin-bottom: 16px;
-    }
-    button {
-      width: 100%;
-      padding: 12px 16px;
-      border: none;
-      border-radius: 10px;
-      background: #22c55e;
-      color: #052e16;
-      font-weight: 700;
-      font-size: 15px;
-      cursor: pointer;
-    }
-    button:hover { background: #16a34a; }
-    button:disabled {
-      background: #475569;
-      color: #cbd5e1;
-      cursor: not-allowed;
-    }
-    .status {
-      margin-top: 12px;
-      font-size: 13px;
-      color: #4ade80;
-      min-height: 18px;
-    }
-    .note {
-      margin-top: 12px;
-      font-size: 12px;
-      color: #94a3b8;
+    .btn {
+      width: 100%; padding: 13px 16px; border: none; border-radius: 10px;
+      background: #22c55e; color: #052e16; font-weight: 700; font-size: 15px; cursor: pointer;
     }
   </style>
 </head>
 <body>
   <div class="card">
-    <div id="stepBadge" class="badge">NHẬN KEY</div>
-    <h1>🔑 KEY CỦA BẠN</h1>
-    <p>Bấm Copy Key rồi dán ngay vào Bot Telegram để nhận coin.</p>
-    <div id="keyBox" class="key-box">Đang tải...</div>
-    <button id="copyBtn" onclick="copyAndConsumeKey()">📋 Copy Key</button>
-    <div id="statusMsg" class="status"></div>
-    <div class="note">Sau khi copy, key sẽ được khóa trên trình duyệt này để tránh dùng lại.</div>
+    <div class="badge">BƯỚC 1 / 2</div>
+    <h1>🚀 LẤY KEY NHẬN COIN</h1>
+    <p>Bấm nút bên dưới để chuyển sang link nhiệm vụ. Hoàn thành xong hệ thống sẽ tự mở trang nhận Key.</p>
+    <button class="btn" onclick="startGetKey()">🔑 Get Key Ngay</button>
   </div>
 
   <script>
-    // Danh sách key (nạp thật nhiều key khớp với /addkey trên bot)
-    const KEY_POOL = [
-      "BOT-TLZ-8KX2P",
-"BOT-TLZ-M9Q4W",
-"BOT-TLZ-7FJ3N",
-"BOT-TLZ-P2L8X",
-"BOT-TLZ-5VQ9A",
-"BOT-TLZ-R6H2K",
-"BOT-TLZ-X4N7B",
-"BOT-TLZ-3WJ9P",
-"BOT-TLZ-K8M5D",
-"BOT-TLZ-Q2F6Y",
-"BOT-TLZ-9PZ4L",
-"BOT-TLZ-H7X3C",
-"BOT-TLZ-4KQ8N",
-"BOT-TLZ-V5R2M",
-"BOT-TLZ-2JX9W",
-"BOT-TLZ-N6P4F",
-"BOT-TLZ-8D3KY",
-"BOT-TLZ-L9W5Q",
-"BOT-TLZ-6XH2P",
-"BOT-TLZ-F4M8Z",
-"BOT-TLZ-3QK7N",
-"BOT-TLZ-Y5P2D",
-"BOT-TLZ-7N9RX",
-"BOT-TLZ-C2V6M",
-"BOT-TLZ-5J8QW",
-"BOT-TLZ-P7X3K",
-"BOT-TLZ-9M4HF",
-"BOT-TLZ-W2R6N",
-"BOT-TLZ-4YQ8P",
-"BOT-TLZ-K3D7X",
-"BOT-TLZ-6F9JM",
-"BOT-TLZ-X8P2V",
-"BOT-TLZ-2N5QK",
-"BOT-TLZ-R4W7H",
-"BOT-TLZ-8M3YC",
-"BOT-TLZ-Q6J9P",
-"BOT-TLZ-5X2FN",
-"BOT-TLZ-H8K4W",
-"BOT-TLZ-3P7RM",
-"BOT-TLZ-V9Q2X",
-"BOT-TLZ-7D5KJ",
-"BOT-TLZ-M4N8P",
-"BOT-TLZ-2W6XF",
-"BOT-TLZ-J9R3Q",
-"BOT-TLZ-6K5HV",
-"BOT-TLZ-P8Y2N",
-"BOT-TLZ-4X7DM",
-"BOT-TLZ-N3Q9K",
-"BOT-TLZ-8R2WF",
-"BOT-TLZ-Y6M4P",
-"BOT-TLZ-5H9XJ",
-"BOT-TLZ-K2V7N",
-"BOT-TLZ-9F3QM",
-"BOT-TLZ-W8P5X",
-"BOT-TLZ-3N6RK",
-"BOT-TLZ-D7J4V",
-"BOT-TLZ-2Q8YP"
+    // Danh sách link rút gọn (link đích của các link này trỏ về: https://tlz03012005-max.github.io/getkey.html?url=...)
+    const SHORT_LINKS = [
+      "https://link4m.net/qyhKWV",
+      "https://gtraffic.io/7_7LQx2",
+      "https://link4m.org/qyhKWV",
+      "https://gtraffic.io/4x7LQIi",
+      "https://trafficso1.com/7QsqxLD",
+      "https://sitetop.net/H9k2pg"
     ];
 
-    const USED_LOCAL_KEY = "tlz_copied_used_keys_v1";
+    function startGetKey() {
+      const idx = Number(localStorage.getItem("tlz_step_idx") || "0") % SHORT_LINKS.length;
+      const targetShortLink = SHORT_LINKS[idx];
+      localStorage.setItem("tlz_step_idx", String(idx + 1));
 
-    function getUsedLocal() {
-      try {
-        return JSON.parse(localStorage.getItem(USED_LOCAL_KEY) || "[]");
-      } catch (e) {
-        return [];
-      }
-    }
+      // Đánh dấu đã bấm Get Key hợp lệ từ trang chính
+      localStorage.setItem("tlz_gate_unlocked", "1");
+      localStorage.setItem("tlz_gate_time", String(Date.now()));
 
-    function markUsedLocal(key) {
-      const used = getUsedLocal();
-      if (!used.includes(key)) {
-        used.push(key);
-        localStorage.setItem(USED_LOCAL_KEY, JSON.stringify(used));
-      }
-    }
-
-    function pickFreshKey() {
-      const used = getUsedLocal();
-      const fresh = KEY_POOL.filter(k => !used.includes(k));
-      if (fresh.length === 0) return null;
-      return fresh[Math.floor(Math.random() * fresh.length)];
-    }
-
-    let currentKey = pickFreshKey();
-    const keyBox = document.getElementById("keyBox");
-    const copyBtn = document.getElementById("copyBtn");
-    const statusMsg = document.getElementById("statusMsg");
-
-    if (currentKey) {
-      keyBox.textContent = currentKey;
-    } else {
-      keyBox.textContent = "HẾT KEY MỚI TRÊN TRÌNH DUYỆT NÀY";
-      copyBtn.disabled = true;
-    }
-
-    function writeClipboard(text) {
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        return navigator.clipboard.writeText(text);
-      }
-      return new Promise((resolve, reject) => {
-        try {
-          const temp = document.createElement("textarea");
-          temp.value = text;
-          document.body.appendChild(temp);
-          temp.select();
-          document.execCommand("copy");
-          document.body.removeChild(temp);
-          resolve();
-        } catch (err) {
-          reject(err);
-        }
-      });
-    }
-
-    function copyAndConsumeKey() {
-      if (!currentKey) return;
-      const copiedKey = currentKey;
-
-      writeClipboard(copiedKey).then(() => {
-        markUsedLocal(copiedKey);
-        const nextKey = pickFreshKey();
-
-        if (nextKey) {
-          currentKey = nextKey;
-          keyBox.textContent = currentKey;
-          statusMsg.textContent = "✅ Đã copy key & chuyển sang key mới!";
-        } else {
-          currentKey = null;
-          keyBox.textContent = "ĐÃ COPY HẾT KEY MỚI";
-          copyBtn.disabled = true;
-          statusMsg.textContent = "✅ Đã copy key! Không còn key mới nào chưa dùng trên máy này.";
-        }
-      }).catch(() => {
-        statusMsg.textContent = "⚠️ Không thể copy tự động, hãy thử lại.";
-      });
+      window.location.href = targetShortLink;
     }
   </script>
 </body>
