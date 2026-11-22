@@ -45,6 +45,7 @@
   </div>
 
   <script>
+    // Kho key có sẵn (nạp đồng bộ lên bot bằng /addkey)
     const KEY_POOL = [
       "KEY_A1B2C3D4",
       "KEY_E5F6G7H8",
@@ -64,6 +65,7 @@
     const statusMsg = document.getElementById("statusMsg");
 
     function isValidUrl(u) {
+      if (!u) return false;
       try {
         const parsed = new URL(u);
         return parsed.protocol === "https:" || parsed.protocol === "http:";
@@ -81,7 +83,7 @@
         "Vui lòng bắt đầu từ trang Get Key và hoàn thành vượt link có tham số ?url=.";
       copyBtn.disabled = true;
     } else {
-      // Khóa vé ngay sau lần mở đầu tiên -> F5 tải lại sẽ ẩn key, không cấp key mới
+      // Khóa vé ngay khi mở xong -> F5 tải lại sẽ ẩn key, không cấp key mới
       localStorage.removeItem("tlz_gate_unlocked");
 
       const used = JSON.parse(localStorage.getItem("tlz_used_keys") || "[]");
