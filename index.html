@@ -24,37 +24,36 @@
       width: 100%; padding: 13px 16px; border: none; border-radius: 10px;
       background: #22c55e; color: #052e16; font-weight: 700; font-size: 15px; cursor: pointer;
     }
+    .btn:hover { background: #16a34a; }
   </style>
 </head>
 <body>
   <div class="card">
     <div class="badge">BƯỚC 1 / 2</div>
     <h1>🚀 LẤY KEY NHẬN COIN</h1>
-    <p>Bấm nút bên dưới để chuyển sang link nhiệm vụ. Hoàn thành xong hệ thống sẽ tự mở trang nhận Key.</p>
+    <p>Bấm nút bên dưới để chuyển sang link nhiệm vụ. Hoàn thành xong hệ thống sẽ mở trang nhận Key.</p>
     <button class="btn" onclick="startGetKey()">🔑 Get Key Ngay</button>
   </div>
 
   <script>
-    // Danh sách link rút gọn (link đích của các link này trỏ về: https://tlz03012005-max.github.io/getkey.html?url=...)
+    // Link đích của các link rút gọn bên dưới đặt là:
+    // https://tlz03012005-max.github.io/get-key/getkey.html?url=https://tlz03012005-max.github.io/get-key/
     const SHORT_LINKS = [
-      "https://link4m.net/AXFeXQF",
-"https://gtraffic.io/4X8l9Qt",
-"https://link4m.org/AXFeXQF",
-"https://2ktraffic.com/vuot-link/tkwp3h5",
-"https://gtraffic.io/9b4Ju8Q",
-"https://2ktraffic.com/vuot-link/vf6qthf"
+      "https://2ktraffic.com/vuot-link/5zgqntt",
+      "https://sharelinkvn.com/s/kxgbhx8p",
+      "https://2ktraffic.com/vuot-link/r5bghim",
+      "https://freepasslink.com/s/fgv6anfv",
+      "https://2ktraffic.com/vuot-link/ju9e5q7",
+      "https://link4m.net/iH2h5oMm"
     ];
 
     function startGetKey() {
       const idx = Number(localStorage.getItem("tlz_step_idx") || "0") % SHORT_LINKS.length;
-      const targetShortLink = SHORT_LINKS[idx];
+      const nextShortLink = SHORT_LINKS[idx];
       localStorage.setItem("tlz_step_idx", String(idx + 1));
 
-      // Đánh dấu đã bấm Get Key hợp lệ từ trang chính
       localStorage.setItem("tlz_gate_unlocked", "1");
-      localStorage.setItem("tlz_gate_time", String(Date.now()));
-
-      window.location.href = targetShortLink;
+      window.location.href = nextShortLink;
     }
   </script>
 </body>
