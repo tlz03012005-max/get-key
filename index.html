@@ -62,6 +62,11 @@
       cursor: pointer;
     }
     button:hover { background: #16a34a; }
+    button:disabled {
+      background: #475569;
+      color: #cbd5e1;
+      cursor: not-allowed;
+    }
     .status {
       margin-top: 12px;
       font-size: 13px;
@@ -79,125 +84,102 @@
   <div class="card">
     <div id="stepBadge" class="badge">NHẬN KEY</div>
     <h1>🔑 KEY CỦA BẠN</h1>
-    <p>Copy key bên dưới rồi quay lại Bot Telegram để nhập nhận coin.</p>
+    <p>Bấm Copy Key rồi dán ngay vào Bot Telegram để nhận coin.</p>
     <div id="keyBox" class="key-box">Đang tải...</div>
-    <button onclick="copyKey()">📋 Copy Key</button>
+    <button id="copyBtn" onclick="copyAndConsumeKey()">📋 Copy Key</button>
     <div id="statusMsg" class="status"></div>
-    <div class="note">F5 sẽ giữ nguyên key này; sang lượt khác sẽ cấp key khác.</div>
+    <div class="note">Sau khi copy, key sẽ được khóa trên trình duyệt này để tránh dùng lại.</div>
   </div>
 
   <script>
+    // Danh sách key (nạp thật nhiều key khớp với /addkey trên bot)
     const KEY_POOL = [
-      "Key-TLZ-A7K92",
-"Key-TLZ-M4X81",
-"Key-TLZ-Q9B35",
-"Key-TLZ-H2N76",
-"Key-TLZ-Z8P41",
-"Key-TLZ-C5R93",
-"Key-TLZ-W1D68",
-"Key-TLZ-L7F24",
-"Key-TLZ-B3Y85",
-"Key-TLZ-T6J19",
-"Key-TLZ-N8A52",
-"Key-TLZ-P4V73",
-"Key-TLZ-X2C96",
-"Key-TLZ-D9M31",
-"Key-TLZ-R5H87",
-"Key-TLZ-G1W64",
-"Key-TLZ-K8Q25",
-"Key-TLZ-Y3L90",
-"Key-TLZ-F6Z42",
-"Key-TLZ-V2B79",
-"Key-TLZ-J9P13",
-"Key-TLZ-A4N86",
-"Key-TLZ-U7C51",
-"Key-TLZ-E2X98",
-"Key-TLZ-M8R34",
-"Key-TLZ-Q5D71",
-"Key-TLZ-H9Y26",
-"Key-TLZ-Z3K84",
-"Key-TLZ-C7V15",
-"Key-TLZ-W4F92",
-"Key-TLZ-L2J68",
-"Key-TLZ-B9A37",
-"Key-TLZ-T5N81",
-"Key-TLZ-N3P46",
-"Key-TLZ-P8X29",
-"Key-TLZ-X6M54",
-"Key-TLZ-D1Q93",
-"Key-TLZ-R7C28",
-"Key-TLZ-G4H65",
-"Key-TLZ-K2W89",
-"Key-TLZ-Y8B13",
-"Key-TLZ-F3L76",
-"Key-TLZ-V9Z42",
-"Key-TLZ-J5D81",
-"Key-TLZ-A2R67",
-"Key-TLZ-U8Y34",
-"Key-TLZ-E6K95",
-"Key-TLZ-M1V28",
-"Key-TLZ-Q7F63",
-"Key-TLZ-H4P19",
-"Key-TLZ-Z6N82",
-"Key-TLZ-C2X47",
-"Key-TLZ-W9M15",
-"Key-TLZ-L5Q73",
-"Key-TLZ-B1H96",
-"Key-TLZ-T8C24",
-"Key-TLZ-N6W51",
-"Key-TLZ-P3J87",
-"Key-TLZ-X9A42",
-"Key-TLZ-D4Y68"
+      "KEY_A1B2C3D4",
+      "KEY_E5F6G7H8",
+      "KEY_I9J0K1L2",
+      "KEY_M3N4O5P6",
+      "KEY_Q7R8S9T0",
+      "KEY_U1V2W3X4",
+      "KEY_Y5Z6A7B8",
+      "KEY_C9D0E1F2"
     ];
 
-    const params = new URLSearchParams(window.location.search);
-    const step = params.get("step") || "default";
-    const STEP_KEY = "tlz_locked_key_step_" + step;
-    const SEEN_KEY = "tlz_locked_seen_v1";
+    const USED_LOCAL_KEY = "tlz_copied_used_keys_v1";
 
-    document.getElementById("stepBadge").textContent =
-      step === "default" ? "NHẬN KEY" : "NHIỆM VỤ #" + step;
-
-    function getSeen() {
-      try { return JSON.parse(localStorage.getItem(SEEN_KEY) || "[]"); }
-      catch (e) { return []; }
-    }
-
-    function markSeen(k) {
-      const seen = getSeen();
-      if (!seen.includes(k)) {
-        seen.push(k);
-        localStorage.setItem(SEEN_KEY, JSON.stringify(seen));
+    function getUsedLocal() {
+      try {
+        return JSON.parse(localStorage.getItem(USED_LOCAL_KEY) || "[]");
+      } catch (e) {
+        return [];
       }
     }
 
-    function pickKey() {
-      const seen = getSeen();
-      let pool = KEY_POOL.filter(k => !seen.includes(k));
-      if (!pool.length) pool = KEY_POOL;
-      return pool[Math.floor(Math.random() * pool.length)];
+    function markUsedLocal(key) {
+      const used = getUsedLocal();
+      if (!used.includes(key)) {
+        used.push(key);
+        localStorage.setItem(USED_LOCAL_KEY, JSON.stringify(used));
+      }
     }
 
-    let currentKey = localStorage.getItem(STEP_KEY);
-    if (!currentKey || !KEY_POOL.includes(currentKey)) {
-      currentKey = pickKey();
-      localStorage.setItem(STEP_KEY, currentKey);
-      markSeen(currentKey);
+    function pickFreshKey() {
+      const used = getUsedLocal();
+      const fresh = KEY_POOL.filter(k => !used.includes(k));
+      if (fresh.length === 0) return null;
+      return fresh[Math.floor(Math.random() * fresh.length)];
     }
 
-    document.getElementById("keyBox").textContent = currentKey;
+    let currentKey = pickFreshKey();
+    const keyBox = document.getElementById("keyBox");
+    const copyBtn = document.getElementById("copyBtn");
+    const statusMsg = document.getElementById("statusMsg");
 
-    function copyKey() {
-      navigator.clipboard.writeText(currentKey).then(() => {
-        document.getElementById("statusMsg").textContent = "✅ Đã copy key!";
+    if (currentKey) {
+      keyBox.textContent = currentKey;
+    } else {
+      keyBox.textContent = "HẾT KEY MỚI TRÊN TRÌNH DUYỆT NÀY";
+      copyBtn.disabled = true;
+    }
+
+    function writeClipboard(text) {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        return navigator.clipboard.writeText(text);
+      }
+      return new Promise((resolve, reject) => {
+        try {
+          const temp = document.createElement("textarea");
+          temp.value = text;
+          document.body.appendChild(temp);
+          temp.select();
+          document.execCommand("copy");
+          document.body.removeChild(temp);
+          resolve();
+        } catch (err) {
+          reject(err);
+        }
+      });
+    }
+
+    function copyAndConsumeKey() {
+      if (!currentKey) return;
+      const copiedKey = currentKey;
+
+      writeClipboard(copiedKey).then(() => {
+        markUsedLocal(copiedKey);
+        const nextKey = pickFreshKey();
+
+        if (nextKey) {
+          currentKey = nextKey;
+          keyBox.textContent = currentKey;
+          statusMsg.textContent = "✅ Đã copy key & chuyển sang key mới!";
+        } else {
+          currentKey = null;
+          keyBox.textContent = "ĐÃ COPY HẾT KEY MỚI";
+          copyBtn.disabled = true;
+          statusMsg.textContent = "✅ Đã copy key! Không còn key mới nào chưa dùng trên máy này.";
+        }
       }).catch(() => {
-        const temp = document.createElement("textarea");
-        temp.value = currentKey;
-        document.body.appendChild(temp);
-        temp.select();
-        document.execCommand("copy");
-        document.body.removeChild(temp);
-        document.getElementById("statusMsg").textContent = "✅ Đã copy key!";
+        statusMsg.textContent = "⚠️ Không thể copy tự động, hãy thử lại.";
       });
     }
   </script>
