@@ -43,10 +43,11 @@
     <div id="keyBox" class="key-box">Đang kiểm tra...</div>
     <button id="copyBtn" class="btn" onclick="copyKey()" disabled>📋 Copy Key</button>
     <div id="statusMsg" class="status"></div>
-    <a class="back-link" href="./">← Quay lại danh sách nhiệm vụ</a>
+    <a class="back-link" href="./">← Quay lại trang nhiệm vụ</a>
   </div>
 
   <script>
+    // Kho key mẫu (nhớ nạp đồng bộ vào bot bằng /addkey)
     const KEY_POOL = [
       "KEY_A1B2C3D4",
       "KEY_E5F6G7H8",
@@ -69,14 +70,14 @@
       keyBox.textContent = "CHƯA HOÀN THÀNH VƯỢT LINK";
       keyBox.classList.add("key-warn");
       document.getElementById("descText").textContent =
-        "Vui lòng chọn nhiệm vụ và vượt link xong để mở khóa key.";
+        "Vui lòng vượt link xong để mở khóa key (link đích có đuôi ?done=1).";
       copyBtn.disabled = true;
     } else if (localStorage.getItem("tlz_key_consumed") === "1") {
-      // Đã xem/tải lại trang ở lượt này -> ẩn key, không sinh key mới
+      // Đã xem hoặc tải lại trang ở lượt này -> ẩn key, không sinh key mới
       keyBox.textContent = "KEY ĐÃ ẨN (ĐÃ TẢI LẠI TRANG)";
       keyBox.classList.add("key-warn");
       document.getElementById("descText").textContent =
-        "Mỗi lượt vượt chỉ hiển thị key 1 lần. Bấm quay lại để làm nhiệm vụ mới.";
+        "Mỗi lượt vượt chỉ hiển thị key 1 lần. Quay lại làm nhiệm vụ mới để lấy key khác.";
       copyBtn.disabled = true;
     } else {
       localStorage.setItem("tlz_key_consumed", "1");
