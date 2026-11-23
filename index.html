@@ -44,15 +44,15 @@
   </div>
 
   <script>
-    // Link đích của các link rút gọn bên dưới cài là:
+    // Link đích của 6 link rút gọn bên dưới đặt là:
     // https://tlz03012005-max.github.io/get-key/getkey.html?done=1
     const TASKS = [
-      { id: 1, name: "Link 1 - 2KTraffic", url: "https://2ktraffic.com/vuot-link/5zgqntt" },
-      { id: 2, name: "Link 2 - ShareLinkVN", url: "https://sharelinkvn.com/s/kxgbhx8p" },
-      { id: 3, name: "Link 3 - 2KTraffic", url: "https://2ktraffic.com/vuot-link/r5bghim" },
-      { id: 4, name: "Link 4 - FreePassLink", url: "https://freepasslink.com/s/fgv6anfv" },
-      { id: 5, name: "Link 5 - 2KTraffic", url: "https://2ktraffic.com/vuot-link/ju9e5q7" },
-      { id: 6, name: "Link 6 - Link4M", url: "https://link4m.net/iH2h5oMm" }
+      { id: 1, name: "2KTraffic 1", url: "https://2ktraffic.com/vuot-link/94gz7wh" },
+      { id: 2, name: "2KTraffic 2", url: "https://2ktraffic.com/vuot-link/nmrcbtn" },
+      { id: 3, name: "2KTraffic 3", url: "https://2ktraffic.com/vuot-link/5e9ipwh" },
+      { id: 4, name: "Link4M 1", url: "https://link4m.net/rXfyq6E" },
+      { id: 5, name: "Link4M 2", url: "https://link4m.org/rXfyq6E" },
+      { id: 6, name: "Phienchoso", url: "https://phienchoso.com/6bb534b34a9fa7a9aa8e.rv" }
     ];
 
     const listEl = document.getElementById("taskList");
@@ -69,7 +69,6 @@
       btn.className = "task-btn";
       btn.textContent = "Vượt ngay";
       btn.onclick = () => {
-        // Mở lượt key mới cho lần vượt này
         localStorage.removeItem("tlz_key_consumed");
         localStorage.setItem("tlz_current_task", String(task.id));
         window.location.href = task.url;
