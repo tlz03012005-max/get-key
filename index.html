@@ -11,50 +11,74 @@
       background: #0f172a; color: #f8fafc; padding: 16px;
     }
     .card {
-      width: 100%; max-width: 420px; background: #1e293b; border: 1px solid #334155;
-      border-radius: 16px; padding: 24px; text-align: center; box-shadow: 0 12px 30px rgba(0,0,0,0.35);
+      width: 100%; max-width: 440px; background: #1e293b; border: 1px solid #334155;
+      border-radius: 16px; padding: 22px; box-shadow: 0 12px 30px rgba(0,0,0,0.35);
     }
     .badge {
       display: inline-block; background: rgba(56, 189, 248, 0.15); color: #38bdf8;
       padding: 4px 10px; border-radius: 999px; font-size: 12px; font-weight: 700; margin-bottom: 10px;
     }
-    h1 { margin: 0 0 8px; font-size: 22px; }
-    p { margin: 0 0 18px; color: #94a3b8; font-size: 14px; line-height: 1.5; }
-    .btn {
-      width: 100%; padding: 13px 16px; border: none; border-radius: 10px;
-      background: #22c55e; color: #052e16; font-weight: 700; font-size: 15px; cursor: pointer;
+    h1 { margin: 0 0 6px; font-size: 21px; }
+    p { margin: 0 0 16px; color: #94a3b8; font-size: 13px; line-height: 1.5; }
+    .task-list { display: flex; flex-direction: column; gap: 10px; }
+    .task-item {
+      display: flex; align-items: center; justify-content: space-between; gap: 10px;
+      background: #0f172a; border: 1px solid #334155; border-radius: 12px; padding: 12px 14px;
     }
-    .btn:hover { background: #16a34a; }
+    .task-name { font-size: 14px; font-weight: 600; color: #e2e8f0; }
+    .task-btn {
+      padding: 8px 14px; border: none; border-radius: 8px;
+      background: #22c55e; color: #052e16; font-weight: 700; font-size: 13px; cursor: pointer;
+      white-space: nowrap;
+    }
+    .task-btn:hover { background: #16a34a; }
   </style>
 </head>
 <body>
   <div class="card">
-    <div class="badge">BƯỚC 1 / 2</div>
-    <h1>🚀 LẤY KEY NHẬN COIN</h1>
-    <p>Bấm nút bên dưới để chuyển sang link nhiệm vụ. Hoàn thành xong hệ thống sẽ mở trang nhận Key.</p>
-    <button class="btn" onclick="startGetKey()">🔑 Get Key Ngay</button>
+    <div class="badge">NHIỆM VỤ LẤY KEY</div>
+    <h1>🚀 CHỌN LINK VƯỢT LẤY KEY</h1>
+    <p>Chọn 1 link bên dưới để vượt. Sau khi vượt xong hệ thống sẽ chuyển tới trang nhận Key.</p>
+
+    <div id="taskList" class="task-list"></div>
   </div>
 
   <script>
-    // Link đích của các link rút gọn bên dưới đặt là:
-    // https://tlz03012005-max.github.io/get-key/getkey.html?url=https://tlz03012005-max.github.io/get-key/
-    const SHORT_LINKS = [
-      "https://2ktraffic.com/vuot-link/5zgqntt",
-      "https://sharelinkvn.com/s/kxgbhx8p",
-      "https://2ktraffic.com/vuot-link/r5bghim",
-      "https://freepasslink.com/s/fgv6anfv",
-      "https://2ktraffic.com/vuot-link/ju9e5q7",
-      "https://link4m.net/iH2h5oMm"
+    // Link đích của các link rút gọn bên dưới cài là:
+    // https://tlz03012005-max.github.io/get-key/getkey.html?done=1
+    const TASKS = [
+      { id: 1, name: "Link 1 - 2KTraffic", url: "https://2ktraffic.com/vuot-link/5zgqntt" },
+      { id: 2, name: "Link 2 - ShareLinkVN", url: "https://sharelinkvn.com/s/kxgbhx8p" },
+      { id: 3, name: "Link 3 - 2KTraffic", url: "https://2ktraffic.com/vuot-link/r5bghim" },
+      { id: 4, name: "Link 4 - FreePassLink", url: "https://freepasslink.com/s/fgv6anfv" },
+      { id: 5, name: "Link 5 - 2KTraffic", url: "https://2ktraffic.com/vuot-link/ju9e5q7" },
+      { id: 6, name: "Link 6 - Link4M", url: "https://link4m.net/iH2h5oMm" }
     ];
 
-    function startGetKey() {
-      const idx = Number(localStorage.getItem("tlz_step_idx") || "0") % SHORT_LINKS.length;
-      const nextShortLink = SHORT_LINKS[idx];
-      localStorage.setItem("tlz_step_idx", String(idx + 1));
+    const listEl = document.getElementById("taskList");
 
-      localStorage.setItem("tlz_gate_unlocked", "1");
-      window.location.href = nextShortLink;
-    }
+    TASKS.forEach(task => {
+      const row = document.createElement("div");
+      row.className = "task-item";
+
+      const name = document.createElement("div");
+      name.className = "task-name";
+      name.textContent = task.name;
+
+      const btn = document.createElement("button");
+      btn.className = "task-btn";
+      btn.textContent = "Vượt ngay";
+      btn.onclick = () => {
+        // Mở lượt key mới cho lần vượt này
+        localStorage.removeItem("tlz_key_consumed");
+        localStorage.setItem("tlz_current_task", String(task.id));
+        window.location.href = task.url;
+      };
+
+      row.appendChild(name);
+      row.appendChild(btn);
+      listEl.appendChild(row);
+    });
   </script>
 </body>
 </html>
