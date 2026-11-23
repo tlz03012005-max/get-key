@@ -32,20 +32,21 @@
     }
     .btn:disabled { background: #475569; color: #cbd5e1; cursor: not-allowed; }
     .status { margin-top: 12px; font-size: 13px; color: #4ade80; min-height: 18px; }
+    .back-link { display: inline-block; margin-top: 14px; color: #38bdf8; font-size: 13px; text-decoration: none; }
   </style>
 </head>
 <body>
   <div class="card">
-    <div class="badge">BƯỚC 2 / 2</div>
+    <div class="badge">HOÀN THÀNH NHIỆM VỤ</div>
     <h1>🔑 KEY CỦA BẠN</h1>
     <p id="descText">Copy key bên dưới rồi quay lại Bot Telegram nhập để nhận coin.</p>
     <div id="keyBox" class="key-box">Đang kiểm tra...</div>
     <button id="copyBtn" class="btn" onclick="copyKey()" disabled>📋 Copy Key</button>
     <div id="statusMsg" class="status"></div>
+    <a class="back-link" href="./">← Quay lại danh sách nhiệm vụ</a>
   </div>
 
   <script>
-    // Kho key có sẵn (nạp đồng bộ lên bot bằng /addkey)
     const KEY_POOL = [
       "KEY_A1B2C3D4",
       "KEY_E5F6G7H8",
@@ -58,33 +59,27 @@
     ];
 
     const params = new URLSearchParams(window.location.search);
-    const rawUrl = (params.get("url") || "").trim();
+    const isDone = params.get("done") === "1" || Boolean((params.get("url") || "").trim());
 
     const keyBox = document.getElementById("keyBox");
     const copyBtn = document.getElementById("copyBtn");
     const statusMsg = document.getElementById("statusMsg");
 
-    function isValidUrl(u) {
-      if (!u) return false;
-      try {
-        const parsed = new URL(u);
-        return parsed.protocol === "https:" || parsed.protocol === "http:";
-      } catch (e) {
-        return false;
-      }
-    }
-
-    const unlocked = localStorage.getItem("tlz_gate_unlocked") === "1";
-
-    if (!isValidUrl(rawUrl) || !unlocked) {
-      keyBox.textContent = "KHÔNG HỢP LỆ / CHƯA QUA BƯỚC GET KEY";
+    if (!isDone) {
+      keyBox.textContent = "CHƯA HOÀN THÀNH VƯỢT LINK";
       keyBox.classList.add("key-warn");
       document.getElementById("descText").textContent =
-        "Vui lòng bắt đầu từ trang Get Key và hoàn thành vượt link có tham số ?url=.";
+        "Vui lòng chọn nhiệm vụ và vượt link xong để mở khóa key.";
+      copyBtn.disabled = true;
+    } else if (localStorage.getItem("tlz_key_consumed") === "1") {
+      // Đã xem/tải lại trang ở lượt này -> ẩn key, không sinh key mới
+      keyBox.textContent = "KEY ĐÃ ẨN (ĐÃ TẢI LẠI TRANG)";
+      keyBox.classList.add("key-warn");
+      document.getElementById("descText").textContent =
+        "Mỗi lượt vượt chỉ hiển thị key 1 lần. Bấm quay lại để làm nhiệm vụ mới.";
       copyBtn.disabled = true;
     } else {
-      // Khóa vé ngay khi mở xong -> F5 tải lại sẽ ẩn key, không cấp key mới
-      localStorage.removeItem("tlz_gate_unlocked");
+      localStorage.setItem("tlz_key_consumed", "1");
 
       const used = JSON.parse(localStorage.getItem("tlz_used_keys") || "[]");
       const fresh = KEY_POOL.filter(k => !used.includes(k));
@@ -99,7 +94,7 @@
       keyBox.textContent = chosenKey;
       copyBtn.disabled = false;
       copyBtn.dataset.key = chosenKey;
-      statusMsg.textContent = "⚠️ Tải lại trang sẽ ẩn key, cần quay lại bước Get Key để lấy lượt mới.";
+      statusMsg.textContent = "⚠️ Tải lại trang sẽ ẩn key và không sinh key mới.";
     }
 
     function copyKey() {
